@@ -1,0 +1,36 @@
+name: Convert Rmd to HTML and Deploy
+
+on:
+  push:
+    paths:
+      - '*.rmd'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install R and necessary packages
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.1.0'
+
+      - name: Install dependencies
+        run: |
+          Rscript -e "install.packages('rmarkdown')"
+
+      - name: Convert Rmd to HTML and deploy
+        run: |
+          for file in *.rmd; do
+            Rscript -e "rmarkdown::render('${file}')"
+            mv "${file%.rmd}.html" ./posts/
+          done
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./posts/

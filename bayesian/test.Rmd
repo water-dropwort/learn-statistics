@@ -9,3 +9,4 @@ xs <- 0:10
 ys <- dbinom(xs, 10, 0.3)
 plot(xs,ys)
 ```
+test

@@ -1,0 +1,150 @@
+---
+title: "正規モデル(分散固定)"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 事後分布
+パラメータ$\theta$、データ$y_i$がともに正規分布に従うものとする。  
+
+- $\theta\sim dnorm(\mu_0,\tau_0) \cdots\text{事前分布}$
+- $y_i\sim dnorm(\theta, \sigma)$
+  
+データの分布の分散$\sigma^2$は固定とする。\
+事後分布は、\
+$$
+\begin{align}
+p(\theta|y_1,\cdots,y_n,\sigma^2)
+&= \frac{p(\theta|\sigma^2)p(y_1,\cdots,y_n|\theta,\sigma^2)}{p(y_1,\cdots,y_n|\sigma^2)}\\
+&\propto\frac{1}{\sqrt{2\pi\tau_0^2}}
+e^{-\frac{1}{2}\left(\frac{\theta-\mu_0}{\tau_0}\right)^2}
+\left(\frac{1}{\sqrt{2\pi\sigma^2}}\right)^n
+e^{-\frac{1}{2}\Sigma{\left(\frac{y_i-\theta}{\sigma}\right)^2}}\\
+&\propto\exp\left\{-\frac{1}{2}\left(\frac{\theta^2-2\theta\mu_0-\mu^2}{\tau_0^2}
++\frac{\Sigma y_i^2-2\theta\Sigma y_i-n\theta^2}{\sigma^2}\right)\right\}\\
+&=\exp\left\{-\frac{1}{2}\left(\left(\frac{1}{\tau_0^2}+\frac{n}{\sigma^2}\right)\theta^2
+-2\left(\frac{\mu_0}{\tau_0^2}+\frac{\Sigma y_i}{\sigma^2}\right)\theta
++\left(\frac{\mu_0^2}{\tau_0^2}+\frac{\Sigma y_i^2}{\sigma^2}\right)\right)\right\}\space\cdots\space(\star)
+\end{align}
+$$
+$a=\frac{1}{\tau_0^2}+\frac{n}{\sigma^2}$、 $b=\frac{\mu_0}{\tau_0^2}+\frac{\Sigma y_i}{\sigma^2}$、 
+$c=\frac{\mu_0^2}{\tau_0^2}+\frac{\Sigma y_i^2}{\sigma^2}$と置いて、
+$$
+\begin{align}
+(\star)
+&=\exp\left\{-\frac{1}{2}\left(a\theta^2-2b\theta+c\right)\right\}\\
+&\propto\exp\left\{-\frac{1}{2}a\theta^2+b\theta\right\}\\
+&=\exp\left\{-\frac{1}{2}a\left(\theta^2-2\frac{b}{a}\theta+\frac{b^2}{a^2}\right)+\frac{b^2}{2a}\right\} \\
+&\propto\exp\left\{-\frac{1}{2}a\left(\theta^2-2\frac{b}{a}\theta+\frac{b^2}{a^2}\right)\right\} \\
+&=\exp\left\{-\frac{1}{2}a\left(\theta-\frac{b}{a}\right)^2\right\}\\
+&=\exp\left\{-\frac{1}{2}\left(\frac{\theta-\frac{b}{a}}{\frac{1}{\sqrt{a}}}\right)^2\right\}\\
+&=\exp\left\{-\frac{1}{2}\left(\frac{\theta-\mu_n}{\tau_n}\right)^2\right\}
+\end{align}
+$$
+最後の行で、$\mu_n = \frac{b}{a}$、$\tau_n = \frac{1}{\sqrt{a}}$と置いている。
+この結果を用いて、$\theta$に依存しない比例定数$C$を求める。
+$$
+\begin{align}
+1 &= \int_{-\infty}^{\infty}C\exp\left\{-\frac{1}{2}\left(\frac{\theta-\mu_n}{\tau_n}\right)^2\right\}d\theta \\
+\frac{1}{C}
+&=\int_{-\infty}^{\infty}\exp\left\{-\frac{1}{2\tau_n^2}(\theta^2-2\theta\mu_n+\mu_n^2)\right\}d\theta \\
+&=\int_{-\infty}^{\infty}\exp\left\{-\left(\frac{\theta^2}{2\tau_n^2}-\frac{\theta\mu_n}{\tau_n^2}+\frac{\mu_n^2}{2\tau_n^2}\right)\right\}d\theta\\
+&=\exp\left\{\frac{\left(\frac{\mu_n}{\tau_n^2}\right)^2}{4\frac{1}{2\tau_n^2}}-\frac{\mu_n^2}{2\tau_n^2}\right\}\sqrt{\frac{\pi}{\frac{1}{2\tau_n^2}}}\space\cdots\space\text{ガウス積分}\\
+&=\exp\left\{\frac{\mu_n^2}{2\tau_n^2}-\frac{\mu_n^2}{2\tau_n^2}\right\}\frac{\sqrt{\pi}}{\frac{1}{\sqrt{2\tau_n^2}}} \\
+&=\sqrt{2\pi\tau_n^2}\\
+C&=\frac{1}{\sqrt{2\pi\tau_n^2}}
+\end{align}
+$$
+よって、
+$$
+\begin{align}
+p(\theta|y_1,\cdots,y_n,\sigma^2)
+&=\frac{1}{\sqrt{2\pi\tau_n^2}}\exp\left\{-\frac{1}{2}\left(\frac{\theta-\mu_n}{\tau_n}\right)^2\right\}\\
+&=dnorm(\mu_n,\tau_n)
+\end{align}
+$$
+事後分布は正規分布となる。
+事後分布のパラメータは、
+$$
+\begin{align}
+\mu_n = \frac{b}{a}=\frac{\frac{\mu_0}{\tau_0^2}+\frac{\Sigma y_i}{\sigma^2}}{\frac{1}{\tau_0^2}+\frac{n}{\sigma^2}}\\
+\tau_n^2=\frac{1}{a}=\frac{1}{\frac{1}{\tau_0^2}+\frac{n}{\sigma^2}}
+\end{align}
+$$
+
+```{r}
+# 事前正規分布のパラメータ
+prior.mean <- 0
+prior.var <- 1
+# 観測値(正規分布乱数) 
+set.seed(20240520)
+obs.N <- 50 
+obs.mean <- 3
+obs.var <- 2 
+obs.data <- rnorm(obs.N, obs.mean, sqrt(obs.var))
+obs.data.mean <- mean(obs.data) 
+# 事後正規分布のパラメータ
+posterior.var <- 1 / (1/prior.var + obs.N/obs.var) 
+posterior.mean <-(1/prior.var*prior.mean + obs.N/obs.var*obs.data.mean)*posterior.var
+
+# 事前正規分布と事後正規分布のグラフ
+xs <- seq(-4,6,length.out = 200)
+prior.ys <- dnorm(xs, prior.mean,sqrt(prior.var)) # 事前分布
+posterior.ys <- dnorm(xs, posterior.mean, sqrt(posterior.var)) # 事後分布
+popu.ys <- dnorm(xs, obs.mean,sqrt(obs.var/obs.N)) 
+# 乱数生成に使用したパラメータから求めた分布
+ylim_max <- max(max(prior.ys),max(posterior.ys))
+plot(xs,prior.ys,type="l",ylim=c(0,ylim_max),col="black",
+     xlab="theta",ylab="p(theta)")
+lines(xs,posterior.ys,col="orange")
+lines(xs,popu.ys, col="blue")
+legend("topleft", legend = c("Prior","Posterior","Population"),
+       col = c("black","orange","blue"), lty=1)
+```
+
+上記には事前分布(Prior)と正規乱数により更新した事後分布(Posterior)、平均値の母集団分布(Population)を示している。  
+
+# 事後予測分布
+$$
+\begin{align}
+p(y_{new}|y_1,\cdots,y_n,\sigma^2)
+&=\int_{-\infty}^{\infty}p(y_{new}|\theta,\sigma^2)p(\theta|y_1,\cdots,y_n,\sigma^2)d\theta \\
+&=\int_{-\infty}^{\infty}dnorm(y_{new},\theta,\sigma)dnorm(\theta,\mu_n,\tau_n)d\theta \\
+&=\int_{-\infty}^{\infty}\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\{-\frac{1}{2}\left(\frac{y_{new}-\theta}{\sigma}\right)^2\right\}
+\frac{1}{\sqrt{2\pi\tau_n^2}}\exp\left\{-\frac{1}{2}\left(\frac{\theta-\mu_n}{\tau_n}\right)^2\right\}d\theta\\
+&=\frac{1}{2\pi\sigma\tau_n}
+\int_{-\infty}^{\infty}\exp\left\{-\frac{1}{2\sigma^2}(y_{new}^2-2y_{new}\theta+\theta^2)
+-\frac{1}{2\tau_n^2}(\theta^2-2\theta\mu_n+\mu_n^2)\right\}d\theta \\
+&=\frac{1}{2\pi\sigma\tau_n}
+\int_{-\infty}^{\infty}\exp\left\{-\left(
+\left(\frac{\tau_n^2+\sigma^2}{2\sigma^2\tau_n^2}\right)\theta^2
+-\left(\frac{y_{new}\tau_n^2+\mu_n\sigma^2}{\sigma^2\tau_n^2}\right)\theta
++\left(\frac{y_{new}^2\tau_n^2+\mu_n^2\sigma^2}{2\sigma^2\tau_n^2}\right)\right)\right\}\\
+&=\frac{1}{2\pi\sigma\tau_n}\exp\left\{\frac{\left(\frac{y_{new}\tau_n^2+\mu_n\sigma^2}{\sigma^2\tau_n^2}\right)^2}{4\left(\frac{\tau_n^2+\sigma^2}{2\sigma^2\tau_n^2}\right)}-\left(\frac{y_{new}^2\tau_n^2+\mu_n^2\sigma^2}{2\sigma^2\tau_n^2}\right)\right\}
+\sqrt{\frac{\pi}{\frac{\tau_n^2+\sigma^2}{2\sigma^2\tau_n^2}}}\\
+&=\frac{1}{2\pi\sigma\tau_n}\frac{\sqrt{2\pi\sigma^2\tau_n^2}}{\sqrt{\tau_n^2+\sigma^2}}
+\exp\left\{\frac{(y_{new}^2\tau_n^4+2y_{new}\tau_n^2\mu_n\sigma^2+\mu_n^2\sigma^4)-(\tau_n^2+\sigma^2)(y_{new}^2\tau_n^2+\mu_n^2\sigma^2)}{2(\tau_n^2+\sigma^2)\sigma^2\tau_n^2}\right\}\\
+&=\frac{1}{\sqrt{2\pi(\tau_n^2+\sigma^2)}}
+\exp\left\{\frac{y_{new}^2\tau_n^4+2y_{new}\tau_n^2\mu_n\sigma^2+\mu_n^2\sigma^4-y_{new}^2\tau_n^4-\mu_n^2\sigma^2\tau_n^2-y_{new}^2\sigma^2\tau_n^2-\mu_n^2\sigma^4}{2(\tau_n^2+\sigma^2)\sigma^2\tau_n^2}\right\}\\
+&=\frac{1}{\sqrt{2\pi(\tau_n^2+\sigma^2)}}\exp\left\{-\frac{1}{2}\left(\frac{y_{new}-\mu_n}{\sqrt{\tau_n^2+\sigma^2}}\right)^2\right\} = dnorm(\mu_n,\sqrt{\tau_n^2+\sigma^2})
+\end{align}
+$$
+事後予測分布は、平均$\mu_n$,分散$\tau_n^2+\sigma^2$の正規分布となる。
+
+```{r}
+# 事後予測分布の平均と分散
+pred.mean <- posterior.mean
+pred.var <- posterior.var + obs.var
+# 事後予測描画用データ
+pred.xs <- seq(-5+pred.mean, 5+pred.mean,length.out=200)
+pred.ys <- dnorm(pred.xs, pred.mean, sqrt(pred.var))
+# 描画
+plot(pred.xs, pred.ys, col="black", type="l", xlab="y", ylab="p(y)")
+```
+

@@ -1,0 +1,11 @@
+---
+title: "Test"
+output: html_document
+---
+
+# Plot
+```{r}
+xs <- 0:10
+ys <- dbinom(xs, 10, 0.3)
+plot(xs,ys)
+```

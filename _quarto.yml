@@ -1,0 +1,13 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "learning-statistics"
+  author: "Water Dropwort"
+  chapters:
+    - index.qmd
+
+format:
+  html:
+    theme: sketchy

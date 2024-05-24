@@ -1,0 +1,11 @@
+# Preface {.unnumbered}
+
+統計学の学習用リポジトリ。 このページはQuarto Bookで作成。
+
+$$
+p(x|\mu,\sigma) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+
+```{r}
+curve(dnorm(x),from=-3,to=3)
+```

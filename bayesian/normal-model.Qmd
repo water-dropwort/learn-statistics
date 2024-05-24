@@ -1,9 +1,5 @@
 # 正規モデル(分散既知) {.unnumbered}
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # 事後分布
 パラメータ$\theta$、データ$y_i$がともに正規分布に従うものとする。  
 

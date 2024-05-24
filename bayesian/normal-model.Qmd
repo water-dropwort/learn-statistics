@@ -1,10 +1,4 @@
----
-title: "正規モデル(分散固定)"
-output: html_document
-editor_options: 
-  markdown: 
-    wrap: 72
----
+# 正規モデル(分散既知) {.unnumbered}
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

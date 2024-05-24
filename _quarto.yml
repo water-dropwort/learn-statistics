@@ -7,6 +7,9 @@ book:
   author: "Water Dropwort"
   chapters:
     - index.qmd
+    - part: "Bayesian"
+      chapters: 
+        - bayesian/normal-model.Qmd
 
 format:
   html:

@@ -1,0 +1,61 @@
+# irisデータによる分析例 {.unnumbered}
+
+```{r}
+#| echo: false
+#| output: false
+library(stringr)
+library(dplyr)
+```
+
+ヒオウギアヤメ(Species=setosa)の萼片の長さ(Sepal.Length)の平均値を正規モデルで推定する。
+
+```{r}
+iris.setosa <- iris %>% filter(Species == "setosa")
+
+N <- length(iris.setosa$Sepal.Length)
+Sepal.Length.sum <- sum(iris.setosa$Sepal.Length)
+Sepal.Length.var <- var(iris.setosa$Sepal.Length) #不変分散
+```
+
+観測値の分布と、観測値の平均と不変分散による正規分布の密度関数のグラフ。
+
+```{r}
+#| echo: false
+hist(iris.setosa$Sepal.Length, freq=FALSE, xlim=c(4,6), xlab = "萼片の長さ", ylab="密度", main=NULL)
+curve(dnorm(x,Sepal.Length.sum/N, sqrt(Sepal.Length.var)), add=TRUE)
+```
+事前分布と事後分布のパラメータは以下のように求める。
+
+$\sigma^2$は、観測値の不変分散$s^2$に等しいものと仮定する。
+
+```{r}
+# 事前分布のパラメータ
+prior.mean <- 5
+prior.var  <- (prior.mean / 2)^2
+
+# 事後分布のパラメータ
+a <- 1/prior.var + N/Sepal.Length.var
+b <- prior.mean/prior.var + Sepal.Length.sum/Sepal.Length.var
+posterior.mean <- b/a
+posterior.var  <- 1/a
+```
+
+各平均、分散の値は以下の通り。
+
+```{r}
+#| echo: false
+sprintf("事前:平均=%f、分散=%f", prior.mean, prior.var)
+sprintf("観測値:平均=%f、分散=%f", Sepal.Length.sum/N, Sepal.Length.var)
+sprintf("事後:平均=%f、分散=%f", posterior.mean, posterior.var)
+```
+
+事前分布と事後分布のグラフは次の通り。
+
+```{r}
+#| echo: false
+# グラフのプロット
+curve(dnorm(x,prior.mean, sqrt(prior.var)),0,10,ylim=c(0,8),ylab="密度", xlab="萼片の長さの平均")
+curve(dnorm(x,posterior.mean, sqrt(posterior.var)),0,10,col="magenta",add=TRUE)
+legend("topright", legend=c("事前","事後"), col=c("black","magenta"),lty=1)
+```
+

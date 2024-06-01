@@ -10,7 +10,8 @@ book:
     - part: "Bayesian"
       chapters: 
         - bayesian/normal-model.Qmd
+        - bayesian/examples/iris-normal-model.qmd
 
 format:
   html:
-    theme: sketchy
+    theme: cosmo

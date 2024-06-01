@@ -19,5 +19,16 @@
       "Bayesian",
       "正規モデル(分散既知)"
     ]
+  },
+  {
+    "objectID": "bayesian/examples/iris-normal-model.html",
+    "href": "bayesian/examples/iris-normal-model.html",
+    "title": "irisデータによる分析例",
+    "section": "",
+    "text": "ヒオウギアヤメ(Species=setosa)の萼片の長さ(Sepal.Length)の平均値を正規モデルで推定する。\n\niris.setosa &lt;- iris %&gt;% filter(Species == \"setosa\")\n\nN &lt;- length(iris.setosa$Sepal.Length)\nSepal.Length.sum &lt;- sum(iris.setosa$Sepal.Length)\nSepal.Length.var &lt;- var(iris.setosa$Sepal.Length) #不変分散\n\n観測値の分布と、観測値の平均と不変分散による正規分布の密度関数のグラフ。\n\n\n\n\n\n\n\n\n\n事前分布と事後分布のパラメータは以下のように求める。\n\\(\\sigma^2\\)は、観測値の不変分散\\(s^2\\)に等しいものと仮定する。\n\n# 事前分布のパラメータ\nprior.mean &lt;- 5\nprior.var  &lt;- (prior.mean / 2)^2\n\n# 事後分布のパラメータ\na &lt;- 1/prior.var + N/Sepal.Length.var\nb &lt;- prior.mean/prior.var + Sepal.Length.sum/Sepal.Length.var\nposterior.mean &lt;- b/a\nposterior.var  &lt;- 1/a\n\n各平均、分散の値は以下の通り。\n\n\n[1] \"事前:平均=5.000000、分散=6.250000\"\n\n\n[1] \"観測値:平均=5.006000、分散=0.124249\"\n\n\n[1] \"事後:平均=5.005998、分散=0.002484\"\n\n\n事前分布と事後分布のグラフは次の通り。",
+    "crumbs": [
+      "Bayesian",
+      "irisデータによる分析例"
+    ]
   }
 ]

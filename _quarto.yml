@@ -7,6 +7,9 @@ book:
   author: "Water Dropwort"
   chapters:
     - index.qmd
+    - part: "Basic"
+      chapters: 
+        - basic/clt-simulation.qmd
     - part: "Bayesian"
       chapters: 
         - bayesian/normal-model.Qmd

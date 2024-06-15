@@ -1,0 +1,90 @@
+# 中心極限定理の実験 {.unnumbered}
+
+ガンマ分布に従う乱数データを作成し、それを母集団とする。
+
+```{r}
+# 母集団ガンマ分布のパラメータ
+population.a <- 2
+population.b <- 2
+
+# 母集団の生成
+set.seed(1)
+population.size <- 1000
+population <- rgamma(population.size, population.a, population.b)
+
+# 母平均、母分散
+population.mean <- mean(population)
+population.var  <- var(population) * (population.size - 1) / population.size
+```
+
+母集団分布のグラフ。
+
+```{r}
+#| echo: false
+curve(dgamma(x, population.a, population.b), from=0, to=10, ylab="Gamma(x|a,b)")
+```
+
+```{r}
+#| echo: false
+sprintf("母平均=%f, 母分散=%f", population.mean, population.var)
+```
+
+
+## 平均の分布が正規分布で近似されうることの確認
+
+```{r}
+#| include: false
+create.sample.means <- function(xs, sample.size, sample.number, seed = 1) {
+  set.seed(seed)
+  means <- numeric(sample.number)
+  for(i in 1:sample.number) {
+    means[i] <- mean(sample(xs, sample.size))
+  }
+  return(means)
+}
+
+drawHistAndCurve.mean <- function(means, sample.size, 
+                                  population.mean, population.var, seed=1) 
+{
+  hist(means, prob = T, main = paste("Sample Size=", toString(sample.size)))
+  #plot(density(means))
+  curve(dnorm(x, population.mean, sqrt(population.var / sample.size)), 
+        add=T, col = "magenta")
+}
+```
+
+サンプル数は1,000とする。サンプルサイズ$n$ごとに
+
+- $\bar{y} \sim N(\mu, \sigma^2/n)$とした理論分布
+- 各サンプルの平均値のヒストグラム
+
+を描画する。
+
+```{r}
+#| echo: false
+sample.sizes <- c(3, 25,50,500)
+shapiro.test.ws <- numeric(length(sample.sizes))
+shapiro.test.pvalues <- numeric(length(sample.sizes))
+
+layout(matrix(1:(length(sample.sizes)), nrow = 2))
+for(i in 1:(length(sample.sizes))) {
+  sample.size <- sample.sizes[i]
+  means <- create.sample.means(population, sample.size, 1000)
+  drawHistAndCurve.mean(means, sample.size, population.mean, population.var)
+  s <- shapiro.test(means)
+  shapiro.test.ws[i] <- s$statistic
+  shapiro.test.pvalues[i] <- s$p.value
+}
+```
+
+シャピロウィルク検定の結果をサンプルサイズごとに示す。
+
+```{r}
+#| echo: false
+data.frame(n = sample.sizes, W = shapiro.test.ws, pvalue = round(shapiro.test.pvalues,3))
+```
+
+サンプルサイズ=500のときは、中心極限定理で想定される正規分布の形になっていない。
+
+サンプルサイズが母集団のサイズに近づくにつれ、サンプル間のデータの違いが少なくなるので、
+より分散が小さい正規分布に近似される。

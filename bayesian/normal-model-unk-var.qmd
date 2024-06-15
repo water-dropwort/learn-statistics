@@ -1,0 +1,161 @@
+# 正規モデル(分散未知) {.unnumbered}
+
+```{r}
+#| include: false
+
+dinvgamma <- function(x,a,b) dgamma(1/x,a,b)/x^2
+
+dinvgamma.mean <- function(a,b) b/(a-1)
+
+dinvgamma.mode <- function(a,b) b/(a+1)
+
+calc.post.var <- function(data, pr.v, pr.k, pr.mu, pr.var) {
+  data.var <- var(data)
+  data.mean <- mean(data)
+  n <- length(data)
+  po.v <- pr.v+n
+  po.k <- pr.k+n
+  return((pr.v*pr.var + (n-1)*data.var + (pr.k*n/po.k)*(data.mean-pr.mu)^2) / po.v)
+}
+
+dinvganorm <- function(mu,var,invga.a,invga.b,norm.mu,norm.var) {
+  p.invga <- dinvgamma(var,invga.a,invga.b)
+  p.norm <- dnorm(mu,norm.mu,sqrt(norm.var))
+  return(p.invga*p.norm)
+}
+```
+
+観測値を以下のように生成する。
+
+```{r}
+#| output: false
+set.seed(123)
+# 母集団分布のパラメータ(平均、分散)
+population.mean <- 3
+population.var <- 2
+# 観測値生成
+obs.N <- 100
+obs.data <- rnorm(obs.N, population.mean, sqrt(population.var))
+# 観測値の平均と分散
+obs.mean <- mean(obs.data)
+obs.var <- var(obs.data)
+```
+
+```{r}
+#| echo: false
+sprintf("観測値の平均=%f", obs.mean)
+sprintf("観測値の分散=%f", obs.var)
+```
+
+## 事前/事後パラメータ
+
+```{r}
+# 事前パラメータ
+## 正規分布パラメータ
+pr.k  <- 1
+pr.mu <- 3
+## 逆ガンマ分布パラメータ
+pr.v   <- 1
+pr.var <- 2
+pr.a <- pr.v/2
+pr.b <- pr.v/2*pr.var
+
+# 事後パラメータ
+## 正規分布パラメータ
+po.k <- obs.N + pr.k
+po.mu <- (obs.N * obs.mean + pr.k * pr.mu) / po.k
+## 逆ガンマ分布パラメータ
+po.v <- obs.N + pr.v
+po.var <- (pr.v*pr.var + (obs.N-1)*obs.var + (pr.k*obs.N/po.k)*(obs.mean-pr.mu)^2) / po.v
+po.a <- po.v/2
+po.b <- po.v/2*po.var
+```
+
+```{r}
+#| include: false
+printRepreValue <- function(mu, a, b) {
+  print(sprintf("正規分布の平均=%f", mu))
+  print(sprintf("逆ガンマ分布の平均=%f", dinvgamma.mean(a, b)))
+  print(sprintf("逆ガンマ分布の最瀕値=%f", dinvgamma.mode(a, b)))
+}
+```
+
+事前分布の代表値
+
+```{r}
+#| echo: false
+printRepreValue(pr.mu, pr.a, pr.b)
+```
+
+事後分布の代表値
+
+```{r}
+#| echo: false
+printRepreValue(po.mu, po.a, po.b)
+```
+
+## 逆ガンマ分布の事前事後分布
+
+```{r}
+#| echo: false
+curve(dinvgamma(x, pr.a, pr.b), 
+      from=0.1, to=5, col="black", ylim=c(0,2),
+      xlab = "sigam^2", ylab="InvGa(sigma^2)")
+curve(dinvgamma(x, po.a, po.b), col="magenta", add=T)
+abline(v=population.var, lty=2, col="orange")
+abline(v=obs.var, lty=2, col="steelblue")
+legend("topright", 
+       legend = c("事前分布", "事後分布", "母分散", "観測値の分散"), 
+       col = c("black", "magenta", "orange", "steelblue"), lwd = 1, lty=c(1,1,2,2))
+```
+
+## 同時分布の描画
+
+```{r}
+#| include: false
+library(ggplot2)
+
+drawInvGammaNormDist <- function(xs, ys, a, b, mu, k, 
+                                 vline1 = NULL, hline1 = NULL,
+                                 vline2 = NULL, hline2 = NULL) 
+{
+  grid <- expand.grid(x=xs, y=ys)
+  grid$z <- dinvganorm(grid$x, grid$y, a, b, mu, grid$y/k)
+  
+  ggplot(grid, aes(x = x, y = y, fill = z)) + 
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "blue") + 
+    labs(title = NULL, x = "mu", y = "sigma^2", fill = "Density") +
+    theme_minimal()+ 
+    geom_vline(xintercept = vline1, color="magenta", linetype = "dashed") +
+    geom_hline(yintercept = hline1, color="magenta", linetype = "dashed") +
+    geom_vline(xintercept = vline2, color="orange", linetype = "dashed") +
+    geom_hline(yintercept = hline2, color="orange", linetype = "dashed")
+}
+```
+
+事前分布
+
+マゼンタの線は母平均、母分散。
+
+```{r}
+#| echo: false
+drawInvGammaNormDist(seq(2, 4, length.out=100),
+                     seq(0.1, 3.1, length.out=100),
+                     pr.a, pr.b, pr.mu, pr.k, 
+                     vline1=population.mean, hline1=population.var)
+```
+
+事後分布
+
+マゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。
+
+```{r}
+#| echo: false
+drawInvGammaNormDist(seq(2, 4, length.out=100),
+                     seq(0.1, 3.1, length.out=100),
+                     po.a, po.b, po.mu, po.k, 
+                     population.mean, population.var,
+                     po.mu, po.var)
+```
+

@@ -30,5 +30,38 @@
       "Bayesian",
       "irisデータによる分析例"
     ]
+  },
+  {
+    "objectID": "bayesian/normal-model-unk-var.html",
+    "href": "bayesian/normal-model-unk-var.html",
+    "title": "正規モデル(分散未知)",
+    "section": "",
+    "text": "事前/事後パラメータ\n# 事前パラメータ\n## 正規分布パラメータ\npr.k  &lt;- 1\npr.mu &lt;- 3\n## 逆ガンマ分布パラメータ\npr.v   &lt;- 1\npr.var &lt;- 2\npr.a &lt;- pr.v/2\npr.b &lt;- pr.v/2*pr.var\n\n# 事後パラメータ\n## 正規分布パラメータ\npo.k &lt;- obs.N + pr.k\npo.mu &lt;- (obs.N * obs.mean + pr.k * pr.mu) / po.k\n## 逆ガンマ分布パラメータ\npo.v &lt;- obs.N + pr.v\npo.var &lt;- (pr.v*pr.var + (obs.N-1)*obs.var + (pr.k*obs.N/po.k)*(obs.mean-pr.mu)^2) / po.v\npo.a &lt;- po.v/2\npo.b &lt;- po.v/2*po.var\n事前分布の代表値\n[1] \"正規分布の平均=3.000000\"\n[1] \"逆ガンマ分布の平均=-2.000000\"\n[1] \"逆ガンマ分布の最瀕値=0.666667\"\n事後分布の代表値\n[1] \"正規分布の平均=3.126587\"\n[1] \"逆ガンマ分布の平均=1.686831\"\n[1] \"逆ガンマ分布の最瀕値=1.621323\"",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル(分散未知)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-unk-var.html#逆ガンマ分布の事前事後分布",
+    "href": "bayesian/normal-model-unk-var.html#逆ガンマ分布の事前事後分布",
+    "title": "正規モデル(分散未知)",
+    "section": "逆ガンマ分布の事前事後分布",
+    "text": "逆ガンマ分布の事前事後分布",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル(分散未知)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-unk-var.html#同時分布の描画",
+    "href": "bayesian/normal-model-unk-var.html#同時分布の描画",
+    "title": "正規モデル(分散未知)",
+    "section": "同時分布の描画",
+    "text": "同時分布の描画\n事前分布\nマゼンタの線は母平均、母分散。\n\n\n\n\n\n\n\n\n\n事後分布\nマゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル(分散未知)"
+    ]
   }
 ]

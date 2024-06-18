@@ -134,7 +134,7 @@ drawInvGammaNormDist <- function(xs, ys, a, b, mu, k,
 }
 ```
 
-事前分布
+### 事前分布
 
 マゼンタの線は母平均、母分散。
 
@@ -146,7 +146,7 @@ drawInvGammaNormDist(seq(2, 4, length.out=100),
                      vline1=population.mean, hline1=population.var)
 ```
 
-事後分布
+### 事後分布
 
 マゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。
 
@@ -157,5 +157,76 @@ drawInvGammaNormDist(seq(2, 4, length.out=100),
                      po.a, po.b, po.mu, po.k, 
                      population.mean, population.var,
                      po.mu, po.var)
+```
+
+## 平均の事後分布
+
+事後同時分布から、$\theta$を推定する事後分布を考える。
+
+### モンテカルロ・シミュレーション
+
+```{r}
+set.seed(1)
+mc.N <- 10000
+mc.vars <- 1/rgamma(mc.N, po.a, po.b)
+mc.means <- rnorm(mc.N, po.mu, sqrt(mc.vars/po.k))
+```
+
+```{r}
+#| echo: false
+hist(mc.means, prob=T, xlab = "mean",
+     main="事後分布の平均の分布")
+```
+```{r}
+#| echo: false
+mc.means.quantiles <- quantile(mc.means, c(0.025, 0.5, 0.975))
+sprintf("95%%信用区間は,(%f ~ %f)", mc.means.quantiles[1], mc.means.quantiles[3])
+sprintf("中央値は、%f", mc.means.quantiles[2])
+```
+
+### $\theta$の周辺分布
+
+事後同時分布の$\theta$の周辺分布は、自由度$v_n=\text{po.v}$のt分布で得られる。
+
+以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)
+
+$k_n=\text{po.k}$, $v_n=\text{po.v}$, $\mu_n=\text{po.mu}$, $\sigma_n^2=\text{po.var}$である。
+
+$$
+\begin{align}
+p(\theta|y_1,...y_n) &= \int_{0}^{\infty}p(\theta,\sigma^2|y_1,...y_n)d\sigma^2 \\
+&= \int_{0}^{\infty}p(\theta|\sigma^2,y_1,...,y_n)p(\sigma^2|y_1,...,y_n)d\sigma^2 \\
+&= \int_{0}^{\infty}\frac{1}{\sqrt{2\pi\sigma^2/k_n}}\exp\{-\frac{(\theta-\mu_n)^2}{2\sigma^2/k_n}\}
+\frac{(v_n\sigma_n^2/2)^{v_n/2}}{\Gamma(v_n/2)}(\sigma^2)^{-v_n/2-1}\exp\{-\frac{v_n\sigma_n^2}{2\sigma^2}\}d\sigma^2 \\
+&=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}
+\int_{0}^{\infty}(\sigma^2)^{-(v_n+1)/2-1}\exp[-\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]d\sigma^2 \\
+&u=\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\},
+\frac{d\sigma^2}{du}=-\frac{1}{2}u^{-2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}\text{として} \\
+&=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}[\frac{1}{2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]^{-(v_n+1)/2}
+\int_{0}^{\infty}u^{(v_n+1)/2-1}\exp\{-u\}du \\
+&=\frac{\Gamma((v_n+1)/2)\sqrt{k_n}}{\Gamma(v_n/2)\sqrt{\pi}}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}^{-(v_n+1)/2}(\frac{1}{v_n\sigma_n^2})^{-v_n/2}\times\frac{(\frac{1}{v_n\sigma_n^2})^{-1/2}}{(\frac{1}{v_n\sigma_n^2})^{-1/2}}\\
+&=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\frac{\Gamma((v_n+1)/2)}{\Gamma(v_n/2)\sqrt{v_n\pi}}\{1+\frac{k_n(\theta-\mu_n)^2}{v_n\sigma^2}\}^{-(v_n+1)/2}\space\space...\space\space(1)
+\end{align}
+$$
+
+式(1)は$t=\frac{(\theta-\mu_n)}{\sigma_n/\sqrt{k_n}}$が自由度$v_n$のt分布に従うとした場合の確率密度関数である。
+
+$\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}$は、置換積分の過程で$\frac{d\theta}{dt}=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}$より得られる。
+
+先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、
+t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。
+
+
+```{r}
+#| echo: false
+mc.means.t <- (mc.means-po.mu) / sqrt(mc.vars/po.k)
+hist(mc.means.t, prob=T, main=NULL, xlab="t(θ)")
+curve(dt(x, po.v), from=-3, to=3, add=T)
+```
+
+t分布の95%信用区間は、(qt関数で得たt値を線形変換している)
+```{r}
+#| echo: false
+sprintf("%f ~ %f", sqrt(po.var/po.k)*qt(0.025, po.v)+po.mu, sqrt(po.var/po.k)*qt(0.975, po.v)+po.mu)
 ```
 

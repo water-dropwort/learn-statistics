@@ -102,6 +102,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -203,7 +232,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#事前事後パラメータ" id="toc-事前事後パラメータ" class="nav-link active" data-scroll-target="#事前事後パラメータ">事前/事後パラメータ</a></li>
   <li><a href="#逆ガンマ分布の事前事後分布" id="toc-逆ガンマ分布の事前事後分布" class="nav-link" data-scroll-target="#逆ガンマ分布の事前事後分布">逆ガンマ分布の事前事後分布</a></li>
-  <li><a href="#同時分布の描画" id="toc-同時分布の描画" class="nav-link" data-scroll-target="#同時分布の描画">同時分布の描画</a></li>
+  <li><a href="#同時分布の描画" id="toc-同時分布の描画" class="nav-link" data-scroll-target="#同時分布の描画">同時分布の描画</a>
+  <ul class="collapse">
+  <li><a href="#事前分布" id="toc-事前分布" class="nav-link" data-scroll-target="#事前分布">事前分布</a></li>
+  <li><a href="#事後分布" id="toc-事後分布" class="nav-link" data-scroll-target="#事後分布">事後分布</a></li>
+  </ul></li>
+  <li><a href="#平均の事後分布" id="toc-平均の事後分布" class="nav-link" data-scroll-target="#平均の事後分布">平均の事後分布</a>
+  <ul class="collapse">
+  <li><a href="#モンテカルロシミュレーション" id="toc-モンテカルロシミュレーション" class="nav-link" data-scroll-target="#モンテカルロシミュレーション">モンテカルロ・シミュレーション</a></li>
+  <li><a href="#thetaの周辺分布" id="toc-thetaの周辺分布" class="nav-link" data-scroll-target="#thetaの周辺分布"><span class="math inline">\(\theta\)</span>の周辺分布</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -304,7 +342,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="同時分布の描画" class="level2">
 <h2 class="anchored" data-anchor-id="同時分布の描画">同時分布の描画</h2>
-<p>事前分布</p>
+<section id="事前分布" class="level3">
+<h3 class="anchored" data-anchor-id="事前分布">事前分布</h3>
 <p>マゼンタの線は母平均、母分散。</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -315,7 +354,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>事後分布</p>
+</section>
+<section id="事後分布" class="level3">
+<h3 class="anchored" data-anchor-id="事後分布">事後分布</h3>
 <p>マゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -326,8 +367,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+</section>
+</section>
+<section id="平均の事後分布" class="level2">
+<h2 class="anchored" data-anchor-id="平均の事後分布">平均の事後分布</h2>
+<p>事後同時分布から、<span class="math inline">\(\theta\)</span>を推定する事後分布を考える。</p>
+<section id="モンテカルロシミュレーション" class="level3">
+<h3 class="anchored" data-anchor-id="モンテカルロシミュレーション">モンテカルロ・シミュレーション</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mc.N <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mc.vars <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fu">rgamma</span>(mc.N, po.a, po.b)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>mc.means <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(mc.N, po.mu, <span class="fu">sqrt</span>(mc.vars<span class="sc">/</span>po.k))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "95%信用区間は,(2.874159 ~ 3.380924)"</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "中央値は、3.127340"</code></pre>
+</div>
+</div>
+</section>
+<section id="thetaの周辺分布" class="level3">
+<h3 class="anchored" data-anchor-id="thetaの周辺分布"><span class="math inline">\(\theta\)</span>の周辺分布</h3>
+<p>事後同時分布の<span class="math inline">\(\theta\)</span>の周辺分布は、自由度<span class="math inline">\(v_n=\text{po.v}\)</span>のt分布で得られる。</p>
+<p>以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)</p>
+<p><span class="math inline">\(k_n=\text{po.k}\)</span>, <span class="math inline">\(v_n=\text{po.v}\)</span>, <span class="math inline">\(\mu_n=\text{po.mu}\)</span>, <span class="math inline">\(\sigma_n^2=\text{po.var}\)</span>である。</p>
+<p><span class="math display">\[
+\begin{align}
+p(\theta|y_1,...y_n) &amp;= \int_{0}^{\infty}p(\theta,\sigma^2|y_1,...y_n)d\sigma^2 \\
+&amp;= \int_{0}^{\infty}p(\theta|\sigma^2,y_1,...,y_n)p(\sigma^2|y_1,...,y_n)d\sigma^2 \\
+&amp;= \int_{0}^{\infty}\frac{1}{\sqrt{2\pi\sigma^2/k_n}}\exp\{-\frac{(\theta-\mu_n)^2}{2\sigma^2/k_n}\}
+\frac{(v_n\sigma_n^2/2)^{v_n/2}}{\Gamma(v_n/2)}(\sigma^2)^{-v_n/2-1}\exp\{-\frac{v_n\sigma_n^2}{2\sigma^2}\}d\sigma^2 \\
+&amp;=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}
+\int_{0}^{\infty}(\sigma^2)^{-(v_n+1)/2-1}\exp[-\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]d\sigma^2 \\
+&amp;u=\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\},
+\frac{d\sigma^2}{du}=-\frac{1}{2}u^{-2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}\text{として} \\
+&amp;=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}[\frac{1}{2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]^{-(v_n+1)/2}
+\int_{0}^{\infty}u^{(v_n+1)/2-1}\exp\{-u\}du \\
+&amp;=\frac{\Gamma((v_n+1)/2)\sqrt{k_n}}{\Gamma(v_n/2)\sqrt{\pi}}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}^{-(v_n+1)/2}(\frac{1}{v_n\sigma_n^2})^{-v_n/2}\times\frac{(\frac{1}{v_n\sigma_n^2})^{-1/2}}{(\frac{1}{v_n\sigma_n^2})^{-1/2}}\\
+&amp;=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\frac{\Gamma((v_n+1)/2)}{\Gamma(v_n/2)\sqrt{v_n\pi}}\{1+\frac{k_n(\theta-\mu_n)^2}{v_n\sigma^2}\}^{-(v_n+1)/2}\space\space...\space\space(1)
+\end{align}
+\]</span></p>
+<p>式(1)は<span class="math inline">\(t=\frac{(\theta-\mu_n)}{\sigma_n/\sqrt{k_n}}\)</span>が自由度<span class="math inline">\(v_n\)</span>のt分布に従うとした場合の確率密度関数である。</p>
+<p><span class="math inline">\(\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\)</span>は、置換積分の過程で<span class="math inline">\(\frac{d\theta}{dt}=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\)</span>より得られる。</p>
+<p>先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、 t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>t分布の95%信用区間は、(qt関数で得たt値を線形変換している)</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2.872774 ~ 3.380401"</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

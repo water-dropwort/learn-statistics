@@ -80,7 +80,18 @@
     "href": "bayesian/normal-model-unk-var.html#同時分布の描画",
     "title": "正規モデル(分散未知)",
     "section": "同時分布の描画",
-    "text": "同時分布の描画\n事前分布\nマゼンタの線は母平均、母分散。\n\n\n\n\n\n\n\n\n\n事後分布\nマゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。",
+    "text": "同時分布の描画\n\n事前分布\nマゼンタの線は母平均、母分散。\n\n\n\n\n\n\n\n\n\n\n\n事後分布\nマゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル(分散未知)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-unk-var.html#平均の事後分布",
+    "href": "bayesian/normal-model-unk-var.html#平均の事後分布",
+    "title": "正規モデル(分散未知)",
+    "section": "平均の事後分布",
+    "text": "平均の事後分布\n事後同時分布から、\\(\\theta\\)を推定する事後分布を考える。\n\nモンテカルロ・シミュレーション\n\nset.seed(1)\nmc.N &lt;- 10000\nmc.vars &lt;- 1/rgamma(mc.N, po.a, po.b)\nmc.means &lt;- rnorm(mc.N, po.mu, sqrt(mc.vars/po.k))\n\n\n\n\n\n\n\n\n\n\n\n\n[1] \"95%信用区間は,(2.874159 ~ 3.380924)\"\n\n\n[1] \"中央値は、3.127340\"\n\n\n\n\n\\(\\theta\\)の周辺分布\n事後同時分布の\\(\\theta\\)の周辺分布は、自由度\\(v_n=\\text{po.v}\\)のt分布で得られる。\n以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)\n\\(k_n=\\text{po.k}\\), \\(v_n=\\text{po.v}\\), \\(\\mu_n=\\text{po.mu}\\), \\(\\sigma_n^2=\\text{po.var}\\)である。\n\\[\n\\begin{align}\np(\\theta|y_1,...y_n) &= \\int_{0}^{\\infty}p(\\theta,\\sigma^2|y_1,...y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}p(\\theta|\\sigma^2,y_1,...,y_n)p(\\sigma^2|y_1,...,y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}\\frac{1}{\\sqrt{2\\pi\\sigma^2/k_n}}\\exp\\{-\\frac{(\\theta-\\mu_n)^2}{2\\sigma^2/k_n}\\}\n\\frac{(v_n\\sigma_n^2/2)^{v_n/2}}{\\Gamma(v_n/2)}(\\sigma^2)^{-v_n/2-1}\\exp\\{-\\frac{v_n\\sigma_n^2}{2\\sigma^2}\\}d\\sigma^2 \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}\n\\int_{0}^{\\infty}(\\sigma^2)^{-(v_n+1)/2-1}\\exp[-\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]d\\sigma^2 \\\\\n&u=\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\},\n\\frac{d\\sigma^2}{du}=-\\frac{1}{2}u^{-2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}\\text{として} \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}[\\frac{1}{2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]^{-(v_n+1)/2}\n\\int_{0}^{\\infty}u^{(v_n+1)/2-1}\\exp\\{-u\\}du \\\\\n&=\\frac{\\Gamma((v_n+1)/2)\\sqrt{k_n}}{\\Gamma(v_n/2)\\sqrt{\\pi}}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}^{-(v_n+1)/2}(\\frac{1}{v_n\\sigma_n^2})^{-v_n/2}\\times\\frac{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}\\\\\n&=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\frac{\\Gamma((v_n+1)/2)}{\\Gamma(v_n/2)\\sqrt{v_n\\pi}}\\{1+\\frac{k_n(\\theta-\\mu_n)^2}{v_n\\sigma^2}\\}^{-(v_n+1)/2}\\space\\space...\\space\\space(1)\n\\end{align}\n\\]\n式(1)は\\(t=\\frac{(\\theta-\\mu_n)}{\\sigma_n/\\sqrt{k_n}}\\)が自由度\\(v_n\\)のt分布に従うとした場合の確率密度関数である。\n\\(\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)は、置換積分の過程で\\(\\frac{d\\theta}{dt}=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)より得られる。\n先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、 t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。\n\n\n\n\n\n\n\n\n\nt分布の95%信用区間は、(qt関数で得たt値を線形変換している)\n\n\n[1] \"2.872774 ~ 3.380401\"",
     "crumbs": [
       "Bayesian",
       "正規モデル(分散未知)"

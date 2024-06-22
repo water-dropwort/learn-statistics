@@ -159,7 +159,7 @@ drawInvGammaNormDist(seq(2, 4, length.out=100),
                      po.mu, po.var)
 ```
 
-## 平均の事後分布
+## $\theta$の周辺分布
 
 事後同時分布から、$\theta$を推定する事後分布を考える。
 
@@ -184,7 +184,7 @@ sprintf("95%%信用区間は,(%f ~ %f)", mc.means.quantiles[1], mc.means.quantil
 sprintf("中央値は、%f", mc.means.quantiles[2])
 ```
 
-### $\theta$の周辺分布
+### t分布
 
 事後同時分布の$\theta$の周辺分布は、自由度$v_n=\text{po.v}$のt分布で得られる。
 
@@ -230,3 +230,33 @@ t分布の95%信用区間は、(qt関数で得たt値を線形変換している
 sprintf("%f ~ %f", sqrt(po.var/po.k)*qt(0.025, po.v)+po.mu, sqrt(po.var/po.k)*qt(0.975, po.v)+po.mu)
 ```
 
+## 事後予測分布
+
+事後予測分布をモンテカルロ・シミュレーションにより確認する。
+
+$$
+\begin{align}
+p(\tilde{y}|y_1,...,y_n) 
+&= \int_{-\infty}^{\infty}\int_{0}^{\infty}p(\tilde{y},\theta,\sigma^2|y_1,...,y_n)d\sigma^2d\theta \\
+&= \int_{-\infty}^{\infty}\int_{0}^{\infty}p(\tilde{y}|\theta,\sigma^2)p(\theta,\sigma^2|y_1,...,y_n)d\sigma^2d\theta
+\end{align}
+$$
+
+$(\theta^{(s)}, \sigma^{2(s)}) \sim p(\theta,\sigma^2|y_1,...,y_n)$を生成し、
+
+$\tilde{y}^{(s)}\sim p(\tilde{y}|\theta^{(s)}, \sigma^{2(s)})$を生成することで事後予測分布を得る。
+
+$(\theta^{(s)}, \sigma^{2(s)})$は、先の平均の周辺分布のモンテカルロ・シミュレーションで得た値を利用し、
+下記のように$y^{(s)}$を取得する。
+
+```{r}
+set.seed(1)
+mc.pred.ys <- rnorm(mc.N, mc.means, sqrt(mc.vars))
+```
+
+以下の図は、サンプリングした$y^{(s)}$のヒストグラムである。
+
+```{r}
+#| echo: false
+hist(mc.pred.ys, prob=T, main="事後予測分布", xlab="y")
+```

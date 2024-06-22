@@ -87,14 +87,58 @@
     ]
   },
   {
-    "objectID": "bayesian/normal-model-unk-var.html#平均の事後分布",
-    "href": "bayesian/normal-model-unk-var.html#平均の事後分布",
+    "objectID": "bayesian/normal-model-unk-var.html#thetaの周辺分布",
+    "href": "bayesian/normal-model-unk-var.html#thetaの周辺分布",
     "title": "正規モデル(分散未知)",
-    "section": "平均の事後分布",
-    "text": "平均の事後分布\n事後同時分布から、\\(\\theta\\)を推定する事後分布を考える。\n\nモンテカルロ・シミュレーション\n\nset.seed(1)\nmc.N &lt;- 10000\nmc.vars &lt;- 1/rgamma(mc.N, po.a, po.b)\nmc.means &lt;- rnorm(mc.N, po.mu, sqrt(mc.vars/po.k))\n\n\n\n\n\n\n\n\n\n\n\n\n[1] \"95%信用区間は,(2.874159 ~ 3.380924)\"\n\n\n[1] \"中央値は、3.127340\"\n\n\n\n\n\\(\\theta\\)の周辺分布\n事後同時分布の\\(\\theta\\)の周辺分布は、自由度\\(v_n=\\text{po.v}\\)のt分布で得られる。\n以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)\n\\(k_n=\\text{po.k}\\), \\(v_n=\\text{po.v}\\), \\(\\mu_n=\\text{po.mu}\\), \\(\\sigma_n^2=\\text{po.var}\\)である。\n\\[\n\\begin{align}\np(\\theta|y_1,...y_n) &= \\int_{0}^{\\infty}p(\\theta,\\sigma^2|y_1,...y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}p(\\theta|\\sigma^2,y_1,...,y_n)p(\\sigma^2|y_1,...,y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}\\frac{1}{\\sqrt{2\\pi\\sigma^2/k_n}}\\exp\\{-\\frac{(\\theta-\\mu_n)^2}{2\\sigma^2/k_n}\\}\n\\frac{(v_n\\sigma_n^2/2)^{v_n/2}}{\\Gamma(v_n/2)}(\\sigma^2)^{-v_n/2-1}\\exp\\{-\\frac{v_n\\sigma_n^2}{2\\sigma^2}\\}d\\sigma^2 \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}\n\\int_{0}^{\\infty}(\\sigma^2)^{-(v_n+1)/2-1}\\exp[-\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]d\\sigma^2 \\\\\n&u=\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\},\n\\frac{d\\sigma^2}{du}=-\\frac{1}{2}u^{-2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}\\text{として} \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}[\\frac{1}{2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]^{-(v_n+1)/2}\n\\int_{0}^{\\infty}u^{(v_n+1)/2-1}\\exp\\{-u\\}du \\\\\n&=\\frac{\\Gamma((v_n+1)/2)\\sqrt{k_n}}{\\Gamma(v_n/2)\\sqrt{\\pi}}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}^{-(v_n+1)/2}(\\frac{1}{v_n\\sigma_n^2})^{-v_n/2}\\times\\frac{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}\\\\\n&=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\frac{\\Gamma((v_n+1)/2)}{\\Gamma(v_n/2)\\sqrt{v_n\\pi}}\\{1+\\frac{k_n(\\theta-\\mu_n)^2}{v_n\\sigma^2}\\}^{-(v_n+1)/2}\\space\\space...\\space\\space(1)\n\\end{align}\n\\]\n式(1)は\\(t=\\frac{(\\theta-\\mu_n)}{\\sigma_n/\\sqrt{k_n}}\\)が自由度\\(v_n\\)のt分布に従うとした場合の確率密度関数である。\n\\(\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)は、置換積分の過程で\\(\\frac{d\\theta}{dt}=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)より得られる。\n先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、 t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。\n\n\n\n\n\n\n\n\n\nt分布の95%信用区間は、(qt関数で得たt値を線形変換している)\n\n\n[1] \"2.872774 ~ 3.380401\"",
+    "section": "\\(\\theta\\)の周辺分布",
+    "text": "\\(\\theta\\)の周辺分布\n事後同時分布から、\\(\\theta\\)を推定する事後分布を考える。\n\nモンテカルロ・シミュレーション\n\nset.seed(1)\nmc.N &lt;- 10000\nmc.vars &lt;- 1/rgamma(mc.N, po.a, po.b)\nmc.means &lt;- rnorm(mc.N, po.mu, sqrt(mc.vars/po.k))\n\n\n\n\n\n\n\n\n\n\n\n\n[1] \"95%信用区間は,(2.874159 ~ 3.380924)\"\n\n\n[1] \"中央値は、3.127340\"\n\n\n\n\nt分布\n事後同時分布の\\(\\theta\\)の周辺分布は、自由度\\(v_n=\\text{po.v}\\)のt分布で得られる。\n以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)\n\\(k_n=\\text{po.k}\\), \\(v_n=\\text{po.v}\\), \\(\\mu_n=\\text{po.mu}\\), \\(\\sigma_n^2=\\text{po.var}\\)である。\n\\[\n\\begin{align}\np(\\theta|y_1,...y_n) &= \\int_{0}^{\\infty}p(\\theta,\\sigma^2|y_1,...y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}p(\\theta|\\sigma^2,y_1,...,y_n)p(\\sigma^2|y_1,...,y_n)d\\sigma^2 \\\\\n&= \\int_{0}^{\\infty}\\frac{1}{\\sqrt{2\\pi\\sigma^2/k_n}}\\exp\\{-\\frac{(\\theta-\\mu_n)^2}{2\\sigma^2/k_n}\\}\n\\frac{(v_n\\sigma_n^2/2)^{v_n/2}}{\\Gamma(v_n/2)}(\\sigma^2)^{-v_n/2-1}\\exp\\{-\\frac{v_n\\sigma_n^2}{2\\sigma^2}\\}d\\sigma^2 \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}\n\\int_{0}^{\\infty}(\\sigma^2)^{-(v_n+1)/2-1}\\exp[-\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]d\\sigma^2 \\\\\n&u=\\frac{1}{2\\sigma^2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\},\n\\frac{d\\sigma^2}{du}=-\\frac{1}{2}u^{-2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}\\text{として} \\\\\n&=\\frac{\\sqrt{k_n}(v_n\\sigma_n^2/2)^{v_n/2}}{\\sqrt{2\\pi}\\Gamma(v_n/2)}[\\frac{1}{2}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}]^{-(v_n+1)/2}\n\\int_{0}^{\\infty}u^{(v_n+1)/2-1}\\exp\\{-u\\}du \\\\\n&=\\frac{\\Gamma((v_n+1)/2)\\sqrt{k_n}}{\\Gamma(v_n/2)\\sqrt{\\pi}}\\{k_n(\\theta-\\mu_n)^2+v_n\\sigma_n^2\\}^{-(v_n+1)/2}(\\frac{1}{v_n\\sigma_n^2})^{-v_n/2}\\times\\frac{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}{(\\frac{1}{v_n\\sigma_n^2})^{-1/2}}\\\\\n&=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\frac{\\Gamma((v_n+1)/2)}{\\Gamma(v_n/2)\\sqrt{v_n\\pi}}\\{1+\\frac{k_n(\\theta-\\mu_n)^2}{v_n\\sigma^2}\\}^{-(v_n+1)/2}\\space\\space...\\space\\space(1)\n\\end{align}\n\\]\n式(1)は\\(t=\\frac{(\\theta-\\mu_n)}{\\sigma_n/\\sqrt{k_n}}\\)が自由度\\(v_n\\)のt分布に従うとした場合の確率密度関数である。\n\\(\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)は、置換積分の過程で\\(\\frac{d\\theta}{dt}=\\frac{\\sqrt{k_n}}{\\sqrt{\\sigma_n^2}}\\)より得られる。\n先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、 t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。\n\n\n\n\n\n\n\n\n\nt分布の95%信用区間は、(qt関数で得たt値を線形変換している)\n\n\n[1] \"2.872774 ~ 3.380401\"",
     "crumbs": [
       "Bayesian",
       "正規モデル(分散未知)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-unk-var.html#事後予測分布",
+    "href": "bayesian/normal-model-unk-var.html#事後予測分布",
+    "title": "正規モデル(分散未知)",
+    "section": "事後予測分布",
+    "text": "事後予測分布\n事後予測分布をモンテカルロ・シミュレーションにより確認する。\n\\[\n\\begin{align}\np(\\tilde{y}|y_1,...,y_n)\n&= \\int_{-\\infty}^{\\infty}\\int_{0}^{\\infty}p(\\tilde{y},\\theta,\\sigma^2|y_1,...,y_n)d\\sigma^2d\\theta \\\\\n&= \\int_{-\\infty}^{\\infty}\\int_{0}^{\\infty}p(\\tilde{y}|\\theta,\\sigma^2)p(\\theta,\\sigma^2|y_1,...,y_n)d\\sigma^2d\\theta\n\\end{align}\n\\]\n\\((\\theta^{(s)}, \\sigma^{2(s)}) \\sim p(\\theta,\\sigma^2|y_1,...,y_n)\\)を生成し、\n\\(\\tilde{y}^{(s)}\\sim p(\\tilde{y}|\\theta^{(s)}, \\sigma^{2(s)})\\)を生成することで事後予測分布を得る。\n\\((\\theta^{(s)}, \\sigma^{2(s)})\\)は、先の平均の周辺分布のモンテカルロ・シミュレーションで得た値を利用し、 下記のように\\(y^{(s)}\\)を取得する。\n\nset.seed(1)\nmc.pred.ys &lt;- rnorm(mc.N, mc.means, sqrt(mc.vars))\n\n以下の図は、サンプリングした\\(y^{(s)}\\)のヒストグラムである。",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル(分散未知)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-mse.html",
+    "href": "bayesian/normal-model-mse.html",
+    "title": "正規モデル 平均二乗誤差(MSE)",
+    "section": "",
+    "text": "母集団の情報\n母集団は、以下のパラメータの正規分布に従うものとする。\npopulation.mean &lt;- 55\npopulation.var &lt;- 15",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル 平均二乗誤差(MSE)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-mse.html#mseの値の変化",
+    "href": "bayesian/normal-model-mse.html#mseの値の変化",
+    "title": "正規モデル 平均二乗誤差(MSE)",
+    "section": "MSEの値の変化",
+    "text": "MSEの値の変化\nMSEの計算に使用されるパラメータを変化させた場合に、 MSE比率=\\(MSE[\\hat{\\theta}_b|\\theta_0]/MSE[\\hat{\\theta}_e|\\theta_0]\\)がどのように変化するかを確認する。 分子がベイズ推定値のMSE、分母が標本平均を推定値に使用した場合のMSEである。\n\n事前平均\\(\\mu_0\\)に対するMSE比率\n事前サンプルサイズ\\(k_0\\)をいくつかのパターンにわけて、事前平均\\(\\mu_0\\)を変化させた場合にMSE比率がどのように変化するかを示す。\n観測値のサンプルサイズは50に固定する。\n\n\n\n\n\n\n\n\n\n\n母平均(グレーの点線)を中心に\\(MSE[\\hat{\\theta}_b|\\theta_0] &lt; MSE[\\hat{\\theta}_e|\\theta_0]\\)になっている(MSEの比率が1未満)。\nその範囲は、\\(k_0\\)が大きくなるにつれ狭くなっている。\n\n\n\n観測値のサンプルサイズに対するMSE比率の変化\n以下は、観測値のサンプルサイズを変化させたときのMSE比率の変化を図示している。\nこちらも同様に\\(k_0\\)についていくつかのパターンを設けている。\n事前平均\\(\\mu_0\\)は50で固定する。\n\n\n\n\n\n\n\n\n\n\nサンプルサイズの増加に伴い、MSEの比率は1に近づいている。(バイアスが0近づいている)\n\n\n\n事前のサンプルサイズの変化に対するMSE比率の変化\n観測値のサンプルサイズを50、\\(\\mu_0\\)を55および57に固定したときに、 事前のサンプルサイズ\\(k_0\\)の変化に対してMSE比率がどのように変化を図示したものである。\n\n\n\n\n\n\n\n\n\n事前平均\\(\\mu_0\\)が母平均に等しい場合は、際限なくMSEが小さくなっていく。\n母平均に一致しない場合は、\\(k_0\\)を大きく取るとMSEが大きくなってしまう。",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル 平均二乗誤差(MSE)"
+    ]
+  },
+  {
+    "objectID": "bayesian/normal-model-mse.html#乱数データによる実験",
+    "href": "bayesian/normal-model-mse.html#乱数データによる実験",
+    "title": "正規モデル 平均二乗誤差(MSE)",
+    "section": "乱数データによる実験",
+    "text": "乱数データによる実験\n乱数で生成されたデータを用いて、サンプルを複数生成し、各サンプルで推定値を求める。\n\nsample.number &lt;- 100\nsample.size &lt;- 50\n\nprior.mu &lt;- 57\n\nthetahats &lt;- matrix(nrow = sample.number, ncol = length(prior.ks))\n\nset.seed(1)\nfor(i in 1:sample.number) {\n  sample &lt;- rnorm(sample.size, population.mean, sqrt(population.var))\n  for(j in 1:length(prior.ks)) {\n    w &lt;- sample.size / (sample.size+prior.ks[j])\n    thetahats[i,j] &lt;- w*mean(sample) + (1-w)*prior.mu\n  }\n}\n\n取得した推定値について、平均および分散、ならびにMSE値を算出する。\n\n\n[1] \"k = 0\"\n[1] \"    平均=54.987651\"\n[1] \"    分散=0.256681\"\n[1] \"    MSE=0.254266\"\n[1] \"k = 1\"\n[1] \"    平均=55.027109\"\n[1] \"    分散=0.246713\"\n[1] \"    MSE=0.244981\"\n[1] \"k = 2\"\n[1] \"    平均=55.065049\"\n[1] \"    分散=0.237316\"\n[1] \"    MSE=0.239174\"\n[1] \"k = 3\"\n[1] \"    平均=55.101558\"\n[1] \"    分散=0.228445\"\n[1] \"    MSE=0.236474\"\n\n\nバイアスが存在する分、\\(k_0\\)の値が大きいほど平均は事前平均\\(\\mu_0\\)の方に寄っている。\nしかし、MSEの値は\\(k_0\\)の値が大きいほど小さくなっており、平均的には母平均に近い推定値を得ることができている。",
+    "crumbs": [
+      "Bayesian",
+      "正規モデル 平均二乗誤差(MSE)"
     ]
   }
 ]

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>learning-statistics - 正規モデル(分散未知)</title>
+<title>learning-statistics - 正規モデル 平均二乗誤差(MSE)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../bayesian/normal-model-mse.html" rel="next">
-<link href="../bayesian/examples/iris-normal-model.html" rel="prev">
+<link href="../bayesian/normal-model-unk-var.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -144,7 +143,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../bayesian/normal-model.html">Bayesian</a></li><li class="breadcrumb-item"><a href="../bayesian/normal-model-unk-var.html">正規モデル(分散未知)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../bayesian/normal-model.html">Bayesian</a></li><li class="breadcrumb-item"><a href="../bayesian/normal-model-mse.html">正規モデル 平均二乗誤差(MSE)</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -215,13 +214,13 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../bayesian/normal-model-unk-var.html" class="sidebar-item-text sidebar-link active">
+  <a href="../bayesian/normal-model-unk-var.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">正規モデル(分散未知)</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../bayesian/normal-model-mse.html" class="sidebar-item-text sidebar-link">
+  <a href="../bayesian/normal-model-mse.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">正規モデル 平均二乗誤差(MSE)</span></a>
   </div>
 </li>
@@ -237,28 +236,23 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#事前事後パラメータ" id="toc-事前事後パラメータ" class="nav-link active" data-scroll-target="#事前事後パラメータ">事前/事後パラメータ</a></li>
-  <li><a href="#逆ガンマ分布の事前事後分布" id="toc-逆ガンマ分布の事前事後分布" class="nav-link" data-scroll-target="#逆ガンマ分布の事前事後分布">逆ガンマ分布の事前事後分布</a></li>
-  <li><a href="#同時分布の描画" id="toc-同時分布の描画" class="nav-link" data-scroll-target="#同時分布の描画">同時分布の描画</a>
+  <li><a href="#母集団の情報" id="toc-母集団の情報" class="nav-link active" data-scroll-target="#母集団の情報">母集団の情報</a></li>
+  <li><a href="#mseの値の変化" id="toc-mseの値の変化" class="nav-link" data-scroll-target="#mseの値の変化">MSEの値の変化</a>
   <ul class="collapse">
-  <li><a href="#事前分布" id="toc-事前分布" class="nav-link" data-scroll-target="#事前分布">事前分布</a></li>
-  <li><a href="#事後分布" id="toc-事後分布" class="nav-link" data-scroll-target="#事後分布">事後分布</a></li>
+  <li><a href="#事前平均mu_0に対するmse比率" id="toc-事前平均mu_0に対するmse比率" class="nav-link" data-scroll-target="#事前平均mu_0に対するmse比率">事前平均<span class="math inline">\(\mu_0\)</span>に対するMSE比率</a></li>
+  <li><a href="#観測値のサンプルサイズに対するmse比率の変化" id="toc-観測値のサンプルサイズに対するmse比率の変化" class="nav-link" data-scroll-target="#観測値のサンプルサイズに対するmse比率の変化">観測値のサンプルサイズに対するMSE比率の変化</a></li>
+  <li><a href="#事前のサンプルサイズの変化に対するmse比率の変化" id="toc-事前のサンプルサイズの変化に対するmse比率の変化" class="nav-link" data-scroll-target="#事前のサンプルサイズの変化に対するmse比率の変化">事前のサンプルサイズの変化に対するMSE比率の変化</a></li>
   </ul></li>
-  <li><a href="#thetaの周辺分布" id="toc-thetaの周辺分布" class="nav-link" data-scroll-target="#thetaの周辺分布"><span class="math inline">\(\theta\)</span>の周辺分布</a>
-  <ul class="collapse">
-  <li><a href="#モンテカルロシミュレーション" id="toc-モンテカルロシミュレーション" class="nav-link" data-scroll-target="#モンテカルロシミュレーション">モンテカルロ・シミュレーション</a></li>
-  <li><a href="#t分布" id="toc-t分布" class="nav-link" data-scroll-target="#t分布">t分布</a></li>
-  </ul></li>
-  <li><a href="#事後予測分布" id="toc-事後予測分布" class="nav-link" data-scroll-target="#事後予測分布">事後予測分布</a></li>
+  <li><a href="#乱数データによる実験" id="toc-乱数データによる実験" class="nav-link" data-scroll-target="#乱数データによる実験">乱数データによる実験</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../bayesian/normal-model.html">Bayesian</a></li><li class="breadcrumb-item"><a href="../bayesian/normal-model-unk-var.html">正規モデル(分散未知)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../bayesian/normal-model.html">Bayesian</a></li><li class="breadcrumb-item"><a href="../bayesian/normal-model-mse.html">正規モデル 平均二乗誤差(MSE)</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">正規モデル(分散未知)</h1>
+<h1 class="title">正規モデル 平均二乗誤差(MSE)</h1>
 </div>
 
 
@@ -275,205 +269,112 @@ window.Quarto = {
 </header>
 
 
-<p>観測値を以下のように生成する。</p>
+<section id="母集団の情報" class="level2">
+<h2 class="anchored" data-anchor-id="母集団の情報">母集団の情報</h2>
+<p>母集団は、以下のパラメータの正規分布に従うものとする。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 母集団分布のパラメータ(平均、分散)</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>population.mean <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>population.var <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測値生成</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>obs.N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>obs.data <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(obs.N, population.mean, <span class="fu">sqrt</span>(population.var))</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測値の平均と分散</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>obs.mean <span class="ot">&lt;-</span> <span class="fu">mean</span>(obs.data)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>obs.var <span class="ot">&lt;-</span> <span class="fu">var</span>(obs.data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "観測値の平均=3.127853"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "観測値の分散=1.666466"</code></pre>
-</div>
-</div>
-<section id="事前事後パラメータ" class="level2">
-<h2 class="anchored" data-anchor-id="事前事後パラメータ">事前/事後パラメータ</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 事前パラメータ</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## 正規分布パラメータ</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>pr.k  <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pr.mu <span class="ot">&lt;-</span> <span class="dv">3</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 逆ガンマ分布パラメータ</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>pr.v   <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>pr.var <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>pr.a <span class="ot">&lt;-</span> pr.v<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>pr.b <span class="ot">&lt;-</span> pr.v<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span>pr.var</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 事後パラメータ</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 正規分布パラメータ</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>po.k <span class="ot">&lt;-</span> obs.N <span class="sc">+</span> pr.k</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>po.mu <span class="ot">&lt;-</span> (obs.N <span class="sc">*</span> obs.mean <span class="sc">+</span> pr.k <span class="sc">*</span> pr.mu) <span class="sc">/</span> po.k</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 逆ガンマ分布パラメータ</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>po.v <span class="ot">&lt;-</span> obs.N <span class="sc">+</span> pr.v</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>po.var <span class="ot">&lt;-</span> (pr.v<span class="sc">*</span>pr.var <span class="sc">+</span> (obs.N<span class="dv">-1</span>)<span class="sc">*</span>obs.var <span class="sc">+</span> (pr.k<span class="sc">*</span>obs.N<span class="sc">/</span>po.k)<span class="sc">*</span>(obs.mean<span class="sc">-</span>pr.mu)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> po.v</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>po.a <span class="ot">&lt;-</span> po.v<span class="sc">/</span><span class="dv">2</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>po.b <span class="ot">&lt;-</span> po.v<span class="sc">/</span><span class="dv">2</span><span class="sc">*</span>po.var</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>事前分布の代表値</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "正規分布の平均=3.000000"
-[1] "逆ガンマ分布の平均=-2.000000"
-[1] "逆ガンマ分布の最瀕値=0.666667"</code></pre>
-</div>
-</div>
-<p>事後分布の代表値</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "正規分布の平均=3.126587"
-[1] "逆ガンマ分布の平均=1.686831"
-[1] "逆ガンマ分布の最瀕値=1.621323"</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>population.mean <span class="ot">&lt;-</span> <span class="dv">55</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>population.var <span class="ot">&lt;-</span> <span class="dv">15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="逆ガンマ分布の事前事後分布" class="level2">
-<h2 class="anchored" data-anchor-id="逆ガンマ分布の事前事後分布">逆ガンマ分布の事前事後分布</h2>
+<section id="mseの値の変化" class="level2">
+<h2 class="anchored" data-anchor-id="mseの値の変化">MSEの値の変化</h2>
+<p>MSEの計算に使用されるパラメータを変化させた場合に、 MSE比率=<span class="math inline">\(MSE[\hat{\theta}_b|\theta_0]/MSE[\hat{\theta}_e|\theta_0]\)</span>がどのように変化するかを確認する。 分子がベイズ推定値のMSE、分母が標本平均を推定値に使用した場合のMSEである。</p>
+<section id="事前平均mu_0に対するmse比率" class="level3">
+<h3 class="anchored" data-anchor-id="事前平均mu_0に対するmse比率">事前平均<span class="math inline">\(\mu_0\)</span>に対するMSE比率</h3>
+<p>事前サンプルサイズ<span class="math inline">\(k_0\)</span>をいくつかのパターンにわけて、事前平均<span class="math inline">\(\mu_0\)</span>を変化させた場合にMSE比率がどのように変化するかを示す。</p>
+<p>観測値のサンプルサイズは50に固定する。</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="normal-model-mse_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<ul>
+<li>母平均(グレーの点線)を中心に<span class="math inline">\(MSE[\hat{\theta}_b|\theta_0] &lt; MSE[\hat{\theta}_e|\theta_0]\)</span>になっている(MSEの比率が1未満)。</li>
+<li>その範囲は、<span class="math inline">\(k_0\)</span>が大きくなるにつれ狭くなっている。</li>
+</ul>
 </section>
-<section id="同時分布の描画" class="level2">
-<h2 class="anchored" data-anchor-id="同時分布の描画">同時分布の描画</h2>
-<section id="事前分布" class="level3">
-<h3 class="anchored" data-anchor-id="事前分布">事前分布</h3>
-<p>マゼンタの線は母平均、母分散。</p>
+<section id="観測値のサンプルサイズに対するmse比率の変化" class="level3">
+<h3 class="anchored" data-anchor-id="観測値のサンプルサイズに対するmse比率の変化">観測値のサンプルサイズに対するMSE比率の変化</h3>
+<p>以下は、観測値のサンプルサイズを変化させたときのMSE比率の変化を図示している。</p>
+<p>こちらも同様に<span class="math inline">\(k_0\)</span>についていくつかのパターンを設けている。</p>
+<p>事前平均<span class="math inline">\(\mu_0\)</span>は50で固定する。</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="normal-model-mse_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<ul>
+<li>サンプルサイズの増加に伴い、MSEの比率は1に近づいている。(バイアスが0近づいている)</li>
+</ul>
 </section>
-<section id="事後分布" class="level3">
-<h3 class="anchored" data-anchor-id="事後分布">事後分布</h3>
-<p>マゼンタの線は母平均、母分散。オレンジの線はpo.mu、po.var。</p>
+<section id="事前のサンプルサイズの変化に対するmse比率の変化" class="level3">
+<h3 class="anchored" data-anchor-id="事前のサンプルサイズの変化に対するmse比率の変化">事前のサンプルサイズの変化に対するMSE比率の変化</h3>
+<p>観測値のサンプルサイズを50、<span class="math inline">\(\mu_0\)</span>を55および57に固定したときに、 事前のサンプルサイズ<span class="math inline">\(k_0\)</span>の変化に対してMSE比率がどのように変化を図示したものである。</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="normal-model-mse_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>事前平均<span class="math inline">\(\mu_0\)</span>が母平均に等しい場合は、際限なくMSEが小さくなっていく。</p>
+<p>母平均に一致しない場合は、<span class="math inline">\(k_0\)</span>を大きく取るとMSEが大きくなってしまう。</p>
 </section>
 </section>
-<section id="thetaの周辺分布" class="level2">
-<h2 class="anchored" data-anchor-id="thetaの周辺分布"><span class="math inline">\(\theta\)</span>の周辺分布</h2>
-<p>事後同時分布から、<span class="math inline">\(\theta\)</span>を推定する事後分布を考える。</p>
-<section id="モンテカルロシミュレーション" class="level3">
-<h3 class="anchored" data-anchor-id="モンテカルロシミュレーション">モンテカルロ・シミュレーション</h3>
+<section id="乱数データによる実験" class="level2">
+<h2 class="anchored" data-anchor-id="乱数データによる実験">乱数データによる実験</h2>
+<p>乱数で生成されたデータを用いて、サンプルを複数生成し、各サンプルで推定値を求める。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>mc.N <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>mc.vars <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fu">rgamma</span>(mc.N, po.a, po.b)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>mc.means <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(mc.N, po.mu, <span class="fu">sqrt</span>(mc.vars<span class="sc">/</span>po.k))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>sample.number <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>sample.size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>prior.mu <span class="ot">&lt;-</span> <span class="dv">57</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>thetahats <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> sample.number, <span class="at">ncol =</span> <span class="fu">length</span>(prior.ks))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>sample.number) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  sample <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(sample.size, population.mean, <span class="fu">sqrt</span>(population.var))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(prior.ks)) {</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    w <span class="ot">&lt;-</span> sample.size <span class="sc">/</span> (sample.size<span class="sc">+</span>prior.ks[j])</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    thetahats[i,j] <span class="ot">&lt;-</span> w<span class="sc">*</span><span class="fu">mean</span>(sample) <span class="sc">+</span> (<span class="dv">1</span><span class="sc">-</span>w)<span class="sc">*</span>prior.mu</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>取得した推定値について、平均および分散、ならびにMSE値を算出する。</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "95%信用区間は,(2.874159 ~ 3.380924)"</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "中央値は、3.127340"</code></pre>
-</div>
-</div>
-</section>
-<section id="t分布" class="level3">
-<h3 class="anchored" data-anchor-id="t分布">t分布</h3>
-<p>事後同時分布の<span class="math inline">\(\theta\)</span>の周辺分布は、自由度<span class="math inline">\(v_n=\text{po.v}\)</span>のt分布で得られる。</p>
-<p>以下証明。(事後分布のパラメータは標準ベイズ統計学をもとにしている)</p>
-<p><span class="math inline">\(k_n=\text{po.k}\)</span>, <span class="math inline">\(v_n=\text{po.v}\)</span>, <span class="math inline">\(\mu_n=\text{po.mu}\)</span>, <span class="math inline">\(\sigma_n^2=\text{po.var}\)</span>である。</p>
-<p><span class="math display">\[
-\begin{align}
-p(\theta|y_1,...y_n) &amp;= \int_{0}^{\infty}p(\theta,\sigma^2|y_1,...y_n)d\sigma^2 \\
-&amp;= \int_{0}^{\infty}p(\theta|\sigma^2,y_1,...,y_n)p(\sigma^2|y_1,...,y_n)d\sigma^2 \\
-&amp;= \int_{0}^{\infty}\frac{1}{\sqrt{2\pi\sigma^2/k_n}}\exp\{-\frac{(\theta-\mu_n)^2}{2\sigma^2/k_n}\}
-\frac{(v_n\sigma_n^2/2)^{v_n/2}}{\Gamma(v_n/2)}(\sigma^2)^{-v_n/2-1}\exp\{-\frac{v_n\sigma_n^2}{2\sigma^2}\}d\sigma^2 \\
-&amp;=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}
-\int_{0}^{\infty}(\sigma^2)^{-(v_n+1)/2-1}\exp[-\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]d\sigma^2 \\
-&amp;u=\frac{1}{2\sigma^2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\},
-\frac{d\sigma^2}{du}=-\frac{1}{2}u^{-2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}\text{として} \\
-&amp;=\frac{\sqrt{k_n}(v_n\sigma_n^2/2)^{v_n/2}}{\sqrt{2\pi}\Gamma(v_n/2)}[\frac{1}{2}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}]^{-(v_n+1)/2}
-\int_{0}^{\infty}u^{(v_n+1)/2-1}\exp\{-u\}du \\
-&amp;=\frac{\Gamma((v_n+1)/2)\sqrt{k_n}}{\Gamma(v_n/2)\sqrt{\pi}}\{k_n(\theta-\mu_n)^2+v_n\sigma_n^2\}^{-(v_n+1)/2}(\frac{1}{v_n\sigma_n^2})^{-v_n/2}\times\frac{(\frac{1}{v_n\sigma_n^2})^{-1/2}}{(\frac{1}{v_n\sigma_n^2})^{-1/2}}\\
-&amp;=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\frac{\Gamma((v_n+1)/2)}{\Gamma(v_n/2)\sqrt{v_n\pi}}\{1+\frac{k_n(\theta-\mu_n)^2}{v_n\sigma^2}\}^{-(v_n+1)/2}\space\space...\space\space(1)
-\end{align}
-\]</span></p>
-<p>式(1)は<span class="math inline">\(t=\frac{(\theta-\mu_n)}{\sigma_n/\sqrt{k_n}}\)</span>が自由度<span class="math inline">\(v_n\)</span>のt分布に従うとした場合の確率密度関数である。</p>
-<p><span class="math inline">\(\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\)</span>は、置換積分の過程で<span class="math inline">\(\frac{d\theta}{dt}=\frac{\sqrt{k_n}}{\sqrt{\sigma_n^2}}\)</span>より得られる。</p>
-<p>先程のモンテカルロ・シミュレーションで得たデータをtの値へ変換し、 t分布の確率密度関数のグラフと重ね合わせると、同じ形になっていることが確認できる。</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<pre><code>[1] "k = 0"
+[1] "    平均=54.987651"
+[1] "    分散=0.256681"
+[1] "    MSE=0.254266"
+[1] "k = 1"
+[1] "    平均=55.027109"
+[1] "    分散=0.246713"
+[1] "    MSE=0.244981"
+[1] "k = 2"
+[1] "    平均=55.065049"
+[1] "    分散=0.237316"
+[1] "    MSE=0.239174"
+[1] "k = 3"
+[1] "    平均=55.101558"
+[1] "    分散=0.228445"
+[1] "    MSE=0.236474"</code></pre>
 </div>
 </div>
-</div>
-<p>t分布の95%信用区間は、(qt関数で得たt値を線形変換している)</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "2.872774 ~ 3.380401"</code></pre>
-</div>
-</div>
-</section>
-</section>
-<section id="事後予測分布" class="level2">
-<h2 class="anchored" data-anchor-id="事後予測分布">事後予測分布</h2>
-<p>事後予測分布をモンテカルロ・シミュレーションにより確認する。</p>
-<p><span class="math display">\[
-\begin{align}
-p(\tilde{y}|y_1,...,y_n)
-&amp;= \int_{-\infty}^{\infty}\int_{0}^{\infty}p(\tilde{y},\theta,\sigma^2|y_1,...,y_n)d\sigma^2d\theta \\
-&amp;= \int_{-\infty}^{\infty}\int_{0}^{\infty}p(\tilde{y}|\theta,\sigma^2)p(\theta,\sigma^2|y_1,...,y_n)d\sigma^2d\theta
-\end{align}
-\]</span></p>
-<p><span class="math inline">\((\theta^{(s)}, \sigma^{2(s)}) \sim p(\theta,\sigma^2|y_1,...,y_n)\)</span>を生成し、</p>
-<p><span class="math inline">\(\tilde{y}^{(s)}\sim p(\tilde{y}|\theta^{(s)}, \sigma^{2(s)})\)</span>を生成することで事後予測分布を得る。</p>
-<p><span class="math inline">\((\theta^{(s)}, \sigma^{2(s)})\)</span>は、先の平均の周辺分布のモンテカルロ・シミュレーションで得た値を利用し、 下記のように<span class="math inline">\(y^{(s)}\)</span>を取得する。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>mc.pred.ys <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(mc.N, mc.means, <span class="fu">sqrt</span>(mc.vars))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>以下の図は、サンプリングした<span class="math inline">\(y^{(s)}\)</span>のヒストグラムである。</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="normal-model-unk-var_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>バイアスが存在する分、<span class="math inline">\(k_0\)</span>の値が大きいほど平均は事前平均<span class="math inline">\(\mu_0\)</span>の方に寄っている。</p>
+<p>しかし、MSEの値は<span class="math inline">\(k_0\)</span>の値が大きいほど小さくなっており、平均的には母平均に近い推定値を得ることができている。</p>
 
 
 </section>
@@ -890,14 +791,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../bayesian/examples/iris-normal-model.html" class="pagination-link" aria-label="irisデータによる分析例">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">irisデータによる分析例</span>
+      <a href="../bayesian/normal-model-unk-var.html" class="pagination-link" aria-label="正規モデル(分散未知)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">正規モデル(分散未知)</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../bayesian/normal-model-mse.html" class="pagination-link" aria-label="正規モデル 平均二乗誤差(MSE)">
-        <span class="nav-page-text">正規モデル 平均二乗誤差(MSE)</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

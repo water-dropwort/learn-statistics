@@ -1,0 +1,164 @@
+# 正規モデル 平均二乗誤差(MSE) {.unnumbered}
+
+```{r}
+#| echo: false
+mse <- function(sigma2, n, k0, mu0, theta0) {
+    w <- n / (k0+n)
+    return(w^2*sigma2/n + (1-w)^2*(mu0 - theta0)^2)
+}
+
+mse.ratio <- function(sigma2, n, k0, mu0, theta0) {
+  return(mse(sigma2, n, k0, mu0, theta0)/mse(sigma2, n, 0, mu0, theta0))
+}
+```
+
+## 母集団の情報
+
+母集団は、以下のパラメータの正規分布に従うものとする。
+
+```{r}
+population.mean <- 55
+population.var <- 15
+```
+
+## MSEの値の変化
+
+MSEの計算に使用されるパラメータを変化させた場合に、
+MSE比率=$MSE[\hat{\theta}_b|\theta_0]/MSE[\hat{\theta}_e|\theta_0]$がどのように変化するかを確認する。
+分子がベイズ推定値のMSE、分母が標本平均を推定値に使用した場合のMSEである。
+
+```{r}
+#| echo: false
+prior.ks <- c(0, 1, 2, 3)
+```
+
+### 事前平均$\mu_0$に対するMSE比率
+
+事前サンプルサイズ$k_0$をいくつかのパターンにわけて、事前平均$\mu_0$を変化させた場合にMSE比率がどのように変化するかを示す。
+
+観測値のサンプルサイズは50に固定する。
+
+```{r}
+#| echo: false
+sample.size <- 50
+line.colors <- c("black", "magenta", "darkcyan", "orange")
+line.lty <- c(2,1,1,1)
+
+for(j in 1:length(prior.ks)) {
+  add_ <- j != 1
+  curve(mse.ratio(population.var,
+                  sample.size,
+                  prior.ks[j],
+                  x,
+                  population.mean),
+        add = add_,
+        col = line.colors[j],
+        lty = line.lty[j],
+        from = population.mean - 2*sqrt(population.var),
+        to = population.mean + 2*sqrt(population.var),
+        ylim = c(0.85,1.6),
+        xlab = "事前平均パラメータ", ylab = "MSEの比率")
+}
+legend("topright", legend = prior.ks, col = line.colors, lty = line.lty)
+abline(v = population.mean, col = "gray", lty = 2)
+```
+- 母平均(グレーの点線)を中心に$MSE[\hat{\theta}_b|\theta_0] < MSE[\hat{\theta}_e|\theta_0]$になっている(MSEの比率が1未満)。
+- その範囲は、$k_0$が大きくなるにつれ狭くなっている。
+
+
+### 観測値のサンプルサイズに対するMSE比率の変化
+
+以下は、観測値のサンプルサイズを変化させたときのMSE比率の変化を図示している。
+
+こちらも同様に$k_0$についていくつかのパターンを設けている。
+
+事前平均$\mu_0$は50で固定する。
+
+```{r}
+#| echo: false
+prior.mu <- 50
+line.colors <- c("black", "magenta", "darkcyan", "orange")
+line.lty <- c(2,1,1,1)
+
+for(j in 1:length(prior.ks)) {
+  add_ <- j != 1
+  curve(mse.ratio(population.var,
+                  x,
+                  prior.ks[j],
+                  prior.mu,
+                  population.mean),
+        add = add_,
+        col = line.colors[j],
+        lty = line.lty[j],
+        from = 0,
+        to = 200,
+        n = 201,
+        ylim = c(0.6, 1.6),
+        xlab = "観測値のサンプルサイズ", ylab = "MSEの比率")
+}
+legend("topright", legend = prior.ks, col = line.colors, lty = line.lty)
+```
+
+- サンプルサイズの増加に伴い、MSEの比率は1に近づいている。(バイアスが0近づいている)
+
+### 事前のサンプルサイズの変化に対するMSE比率の変化
+
+観測値のサンプルサイズを50、$\mu_0$を55および57に固定したときに、
+事前のサンプルサイズ$k_0$の変化に対してMSE比率がどのように変化を図示したものである。
+
+```{r}
+#| echo: false
+prior.mus <- c(55, 57)
+line.colors <- c("black", "magenta")
+
+for(i in 1:length(prior.mus)) {
+  add_ <- i != 1
+  curve(mse.ratio(population.var, 50, x, prior.mus[i], population.mean), 
+        from = 0, to = 10, n = 11, xlab="k0", ylab="MSEの比率", add = add_,
+        col = line.colors[i], ylim = c(0.70, 1.1))
+}
+legend("topleft", legend = prior.mus, col = line.colors, lwd = 1)
+abline(h = 1, lty = 2)
+```
+
+事前平均$\mu_0$が母平均に等しい場合は、際限なくMSEが小さくなっていく。
+
+母平均に一致しない場合は、$k_0$を大きく取るとMSEが大きくなってしまう。
+
+## 乱数データによる実験
+
+乱数で生成されたデータを用いて、サンプルを複数生成し、各サンプルで推定値を求める。
+
+```{r}
+sample.number <- 100
+sample.size <- 50
+
+prior.mu <- 57
+
+thetahats <- matrix(nrow = sample.number, ncol = length(prior.ks))
+
+set.seed(1)
+for(i in 1:sample.number) {
+  sample <- rnorm(sample.size, population.mean, sqrt(population.var))
+  for(j in 1:length(prior.ks)) {
+    w <- sample.size / (sample.size+prior.ks[j])
+    thetahats[i,j] <- w*mean(sample) + (1-w)*prior.mu
+  }
+}
+```
+
+取得した推定値について、平均および分散、ならびにMSE値を算出する。
+
+```{r}
+#| echo: false
+for(j in 1:length(prior.ks)) {
+  print(sprintf("k = %d", prior.ks[j]))
+  print(sprintf("    平均=%f", mean(thetahats[,j])))
+  print(sprintf("    分散=%f", var(thetahats[,j])))
+  print(sprintf("    MSE=%f", mean((thetahats[,j]-population.mean)^2)))
+}
+```
+
+バイアスが存在する分、$k_0$の値が大きいほど平均は事前平均$\mu_0$の方に寄っている。
+
+しかし、MSEの値は$k_0$の値が大きいほど小さくなっており、平均的には母平均に近い推定値を得ることができている。

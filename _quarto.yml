@@ -15,6 +15,7 @@ book:
         - bayesian/normal-model.Qmd
         - bayesian/examples/iris-normal-model.qmd
         - bayesian/normal-model-unk-var.qmd
+        - bayesian/normal-model-mse.qmd
 
 format:
   html:
